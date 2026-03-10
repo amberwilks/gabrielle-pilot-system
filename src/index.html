@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#F5F3FF">
+  <title>Gabrielle's Check-In</title>
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=DM+Sans:opsz,wght@9..40,300..800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{font-family:'DM Sans',sans-serif;background:linear-gradient(180deg,#F5F3FF 0%,#FAFAFE 40%,#FFF 100%);min-height:100vh;min-height:100dvh;color:#333}
+    h1,h2{font-family:'Fraunces',serif}
+    .container{max-width:420px;margin:0 auto;padding:32px 20px 120px}
+    .tagline{text-align:center;font-size:11px;color:#C4B5FD;font-weight:600;letter-spacing:.5px;margin-top:32px}
+    .form-card{padding:20px;border:none;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:16px;text-align:left;width:100%;transition:transform .15s,box-shadow .15s;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .form-card:active{transform:scale(.97)}
+    .form-card-icon{font-size:36px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:rgba(255,255,255,.7);flex-shrink:0}
+    .energy-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+    .energy-btn{flex:1 1 0;min-width:56px;max-width:80px;padding:12px 4px 8px;border:2px solid #E5E7EB;border-radius:16px;background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+    .energy-btn.sel{transform:scale(1.08)}
+    .energy-msg{margin-top:10px;text-align:center;font-size:13px;font-weight:600;padding:6px 12px;border-radius:99px;width:100%}
+    .section-label{font-size:14px;font-weight:700;color:#374151;margin-bottom:12px}
+    .task-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:#fff;border:1.5px solid #E5E7EB;cursor:pointer;transition:all .15s;margin-bottom:8px}
+    .task-row.chk{background:#F0FDF4;border-color:#86EFAC}
+    .task-row input[type=checkbox]{width:20px;height:20px;accent-color:#10B981;cursor:pointer}
+    .task-label{font-size:15px;color:#374151}
+    .task-row.chk .task-label{font-weight:600;color:#166534;text-decoration:line-through}
+    .ess-tag{margin-left:auto;font-size:9px;font-weight:700;color:#6366F1;background:#EDE9FE;padding:2px 8px;border-radius:99px;letter-spacing:.5px;text-transform:uppercase}
+    .pill-wrap{display:flex;flex-wrap:wrap;gap:8px}
+    .pill{padding:8px 16px;border-radius:99px;border:1.5px solid #E5E7EB;background:#fff;color:#374151;font-size:13px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+    .pill.sel{border:2px solid #6366F1;background:#EDE9FE;color:#4338CA;font-weight:600}
+    .other-btn{padding:8px 16px;border-radius:99px;border:1.5px dashed #D1D5DB;background:#fff;color:#6B7280;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif}
+    .other-input{flex:1;padding:10px 14px;border-radius:12px;border:1.5px solid #6366F1;font-size:14px;font-family:'DM Sans',sans-serif;outline:none}
+    .other-close{background:none;border:none;cursor:pointer;font-size:18px;color:#9CA3AF;padding:4px}
+    textarea.text-input{width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid #E5E7EB;font-size:14px;font-family:'DM Sans',sans-serif;resize:none;height:80px;outline:none;transition:border-color .15s}
+    textarea.text-input:focus{border-color:#6366F1}
+    .submit-bar{position:fixed;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(180deg,transparent,#fff 30%);display:flex;justify-content:center;z-index:10}
+    .submit-btn{width:100%;max-width:380px;padding:16px;border-radius:16px;border:none;background:linear-gradient(135deg,#6366F1,#8B5CF6);color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(99,102,241,.35);transition:transform .15s}
+    .submit-btn:active{transform:scale(.97)}
+    .submit-btn:disabled{opacity:.5;cursor:not-allowed}
+    .back-btn{background:none;border:none;cursor:pointer;font-size:14px;color:#6366F1;font-weight:600;margin-bottom:16px;padding:4px 0;font-family:'DM Sans',sans-serif}
+    .success-icon{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#A7F3D0,#6EE7B7);display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 8px 24px rgba(16,185,129,.25)}
+    .done-btn{margin-top:16px;padding:12px 32px;border-radius:99px;border:none;background:#6366F1;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+    .hidden-note{font-size:12px;color:#9CA3AF;margin-top:8px;text-align:center;font-style:italic}
+    .status-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:100;opacity:0;transition:opacity .3s}
+    .status-toast.show{opacity:1}
+    .status-toast.sending{background:#EDE9FE;color:#4338CA}
+    .status-toast.success{background:#D1FAE5;color:#065F46}
+    .status-toast.error{background:#FEE2E2;color:#991B1B}
+    @media(hover:hover){.form-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}.submit-btn:hover{transform:translateY(-1px)}}
+  </style>
+</head>
+<body>
+<div id="status-toast" class="status-toast"></div>
+<div class="container" id="app"></div>
+
+<script>
+// ============================================================
+// PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+// ============================================================
+const SHEETS_ENDPOINT = "https://script.google.com/macros/s/AKfycbzpeZxJyOAsMCIJcrdD4hFsTf7K53vpDSNFkes6H1SFE7P2q9RMhQTJqCeLO9E8rCvU/exec";
+
+// ============================================================
+// DATA
+// ============================================================
+const ENERGY = [
+  {v:1,label:"Running on empty",emoji:"🔋",color:"#EF4444",bg:"#FEE2E2",desc:"Bare minimum today"},
+  {v:2,label:"Low energy",emoji:"🌧️",color:"#F59E0B",bg:"#FEF3C7",desc:"Basics only"},
+  {v:3,label:"Doing okay",emoji:"☁️",color:"#6366F1",bg:"#EDE9FE",desc:"Normal routine"},
+  {v:4,label:"Good day",emoji:"🌤️",color:"#10B981",bg:"#D1FAE5",desc:"Full routine"},
+  {v:5,label:"Great!",emoji:"☀️",color:"#059669",bg:"#A7F3D0",desc:"Ready for extras"}
+];
+const MORNING=[
+  {id:"brush_teeth",label:"Brush teeth",ess:true},
+  {id:"wash_face",label:"Wash face",ess:true},
+  {id:"clean_glasses",label:"Clean glasses",ess:true},
+  {id:"brush_hair",label:"Brush hair",ess:false},
+  {id:"get_dressed",label:"Get dressed",ess:true},
+  {id:"backpack_binder",label:"Backpack + binder",ess:true}
+];
+const CLASSES=["Technical Theatre","Health & Family Ed","American History","Spanish 1","Biology","English 1","Advanced Geometry"];
+const CHORES=[
+  {id:"dishes",label:"Dishes"},
+  {id:"tidy_room",label:"Tidy room"},
+  {id:"laundry_wash",label:"Laundry — wash & dry"},
+  {id:"laundry_fold",label:"Laundry — fold & put away"},
+  {id:"clean_for_cleaners",label:"Clean up for cleaners"}
+];
+const EVENING=[
+  {id:"medication",label:"Medication",ess:true},
+  {id:"shower",label:"Shower",ess:false},
+  {id:"retainer",label:"Retainer in",ess:true},
+  {id:"brush_teeth_pm",label:"Brush teeth",ess:true},
+  {id:"pick_clothes",label:"Pick out tomorrow's clothes",ess:false}
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let state = {form:null,energy:0,tasks:[],hwClasses:[],chores:[],otherChore:"",showOther:false,goodThing:"",submitted:false,sending:false};
+
+function reset(){state={form:null,energy:0,tasks:[],hwClasses:[],chores:[],otherChore:"",showOther:false,goodThing:"",submitted:false,sending:false};render();}
+function setState(patch){Object.assign(state,patch);render();}
+function toggleArr(arr,val){return arr.includes(val)?arr.filter(x=>x!==val):[...arr,val];}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+async function handleSubmit(){
+  const data={timestamp:new Date().toISOString(),formType:state.form,energy:state.energy,tasks:state.tasks};
+  if(state.form==="afternoon"){data.homeworkClasses=state.hwClasses;data.chores=state.chores;if(state.otherChore)data.otherChore=state.otherChore;}
+  if(state.form==="evening"){data.goodThing=state.goodThing;}
+
+  if(SHEETS_ENDPOINT && SHEETS_ENDPOINT!=="PASTE_YOUR_URL_HERE"){
+    setState({sending:true});
+    showToast("Saving...","sending");
+    try{
+      await fetch(SHEETS_ENDPOINT,{method:"POST",body:JSON.stringify(data),mode:"no-cors"});
+      showToast("Saved!","success");
+    }catch(err){
+      console.error(err);
+      showToast("Could not save — check connection","error");
+    }
+  }
+  setState({submitted:true,sending:false});
+}
+
+function showToast(msg,type){
+  const t=document.getElementById("status-toast");
+  t.textContent=msg;t.className="status-toast "+type+" show";
+  setTimeout(()=>{t.className="status-toast"},2500);
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render(){
+  const app=document.getElementById("app");
+  const h=new Date().getHours();
+  const greeting=h<12?"Good morning":h<17?"Good afternoon":"Good evening";
+  const isLow=state.energy>0&&state.energy<=2;
+  const tasks=state.form==="morning"?MORNING:state.form==="evening"?EVENING:[];
+  const visible=isLow?tasks.filter(t=>t.ess):tasks;
+
+  // HOME SCREEN
+  if(!state.form){
+    app.innerHTML=`
+      <div style="text-align:center;margin-bottom:32px">
+        <h1 style="font-size:28px;font-weight:800;color:#1F1235;margin:0 0 4px">${greeting}, Gabrielle</h1>
+        <p style="font-size:14px;color:#8B7FA8;margin:0">Which check-in are you doing?</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <button class="form-card" style="background:linear-gradient(135deg,#FEF3C7,#FDE68A)" onclick="setState({form:'morning'})">
+          <span class="form-card-icon">🌅</span>
+          <div><div style="font-size:18px;font-weight:700;color:#1F1235;font-family:'Fraunces',serif">Morning</div><div style="font-size:13px;color:#6B7280;margin-top:2px">Hygiene & getting ready</div></div>
+        </button>
+        <button class="form-card" style="background:linear-gradient(135deg,#EDE9FE,#C4B5FD)" onclick="setState({form:'afternoon'})">
+          <span class="form-card-icon">📚</span>
+          <div><div style="font-size:18px;font-weight:700;color:#1F1235;font-family:'Fraunces',serif">Afternoon</div><div style="font-size:13px;color:#6B7280;margin-top:2px">Homework & chores</div></div>
+        </button>
+        <button class="form-card" style="background:linear-gradient(135deg,#F3E8FF,#DDD6FE)" onclick="setState({form:'evening'})">
+          <span class="form-card-icon">🌙</span>
+          <div><div style="font-size:18px;font-weight:700;color:#1F1235;font-family:'Fraunces',serif">Evening</div><div style="font-size:13px;color:#6B7280;margin-top:2px">Wind down & prep</div></div>
+        </button>
+      </div>
+      <div class="tagline">GABRIELLE'S SUPPORT SYSTEM — POWERED BY THE WILKS FAMILY 💜</div>`;
+    return;
+  }
+
+  // SUCCESS SCREEN
+  if(state.submitted){
+    const ed=ENERGY[state.energy-1];
+    const cc=state.tasks.length+state.hwClasses.length+state.chores.length+(state.otherChore?1:0);
+    const tc=visible.length+(state.form==="afternoon"?CLASSES.length+CHORES.length:0);
+    const pct=tc>0?Math.round(cc/tc*100):0;
+    let msg=state.energy<=2?"Even on tough days, you showed up. That matters.":pct===100?"Every single item done — you crushed it, Gabrielle!":`${cc} of ${tc} tasks completed. Great effort!`;
+    app.innerHTML=`
+      <div style="text-align:center;padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:16px">
+        <div class="success-icon">✓</div>
+        <h2 style="font-size:22px;font-weight:800;color:#111827;margin:0">Check-in complete!</h2>
+        <p style="font-size:15px;color:#6B7280;margin:0">${msg}</p>
+        <div style="padding:8px 16px;background:${ed.bg};border-radius:99px;font-size:13px;font-weight:600;color:${ed.color}">Energy today: ${ed.emoji} ${ed.label}</div>
+        <button class="done-btn" onclick="reset()">Done</button>
+      </div>`;
+    return;
+  }
+
+  // FORM SCREEN
+  const title=state.form==="morning"?"Morning Check-In":state.form==="afternoon"?"Afternoon Check-In":"Evening Check-In";
+  let html=`<button class="back-btn" onclick="reset()">← Back</button>
+    <h1 style="font-size:24px;font-weight:800;color:#1F1235;margin:0 0 24px">${title}</h1>`;
+
+  // Energy picker
+  html+=`<div style="margin-bottom:28px"><div class="section-label">How's your energy right now?</div><div class="energy-row">`;
+  ENERGY.forEach(e=>{
+    const sel=state.energy===e.v;
+    html+=`<button class="energy-btn${sel?" sel":""}" style="${sel?`border:3px solid ${e.color};background:${e.bg};box-shadow:0 4px 12px ${e.color}33`:""};" onclick="setState({energy:${e.v}})">
+      <span style="font-size:28px">${e.emoji}</span>
+      <span style="font-size:10px;font-weight:700;color:${sel?e.color:"#9CA3AF"}">${e.v}</span>
+    </button>`;
+  });
+  html+=`</div>`;
+  if(state.energy>0){
+    const ed=ENERGY[state.energy-1];
+    html+=`<div class="energy-msg" style="color:${ed.color};background:${ed.bg}">${ed.desc}${isLow?" — only essentials shown 💜":""}</div>`;
+  }
+  html+=`</div>`;
+
+  if(state.energy>0){
+    // TASK CHECKBOXES (morning/evening)
+    if(state.form==="morning"||state.form==="evening"){
+      html+=`<div style="margin-bottom:24px"><div class="section-label">${state.form==="morning"?"What did you get done?":"Evening tasks"}</div>`;
+      visible.forEach(t=>{
+        const chk=state.tasks.includes(t.id);
+        html+=`<label class="task-row${chk?" chk":""}" onclick="event.preventDefault();setState({tasks:toggleArr(state.tasks,'${t.id}')})">
+          <input type="checkbox" ${chk?"checked":""} tabindex="-1">
+          <span class="task-label">${t.label}</span>
+          ${t.ess?'<span class="ess-tag">essential</span>':""}
+        </label>`;
+      });
+      if(isLow&&tasks.length>visible.length){
+        html+=`<p class="hidden-note">${tasks.length-visible.length} non-essential items hidden for today</p>`;
+      }
+      html+=`</div>`;
+    }
+
+    // AFTERNOON
+    if(state.form==="afternoon"){
+      // Homework classes
+      html+=`<div style="margin-bottom:24px"><div class="section-label">Which classes did you work on?</div><div class="pill-wrap">`;
+      CLASSES.forEach(c=>{
+        const sel=state.hwClasses.includes(c);
+        html+=`<button class="pill${sel?" sel":""}" onclick="setState({hwClasses:toggleArr(state.hwClasses,'${c.replace(/'/g,"\\'")}')})">${sel?"✓ ":""}${c}</button>`;
+      });
+      html+=`</div></div>`;
+
+      // Chores
+      if(!isLow){
+        html+=`<div style="margin-bottom:24px"><div class="section-label">Chores completed</div><div class="pill-wrap">`;
+        CHORES.forEach(c=>{
+          const sel=state.chores.includes(c.id);
+          html+=`<button class="pill${sel?" sel":""}" onclick="setState({chores:toggleArr(state.chores,'${c.id}')})">${sel?"✓ ":""}${c.label}</button>`;
+        });
+        html+=`</div>`;
+        // Other chore
+        html+=`<div style="margin-top:8px">`;
+        if(!state.showOther){
+          html+=`<button class="other-btn" onclick="setState({showOther:true})">+ Other</button>`;
+        }else{
+          html+=`<div style="display:flex;gap:8px;align-items:center">
+            <input class="other-input" type="text" value="${state.otherChore.replace(/"/g,'&quot;')}" placeholder="What else did you do?" oninput="state.otherChore=this.value" autofocus>
+            <button class="other-close" onclick="setState({showOther:false,otherChore:''})">✕</button>
+          </div>`;
+        }
+        html+=`</div></div>`;
+      }else{
+        html+=`<p class="hidden-note">Chores hidden for today — focus on what you can 💜</p>`;
+      }
+    }
+
+    // EVENING: Good thing
+    if(state.form==="evening"){
+      html+=`<div style="margin-bottom:24px"><div class="section-label">One good thing that happened today</div>
+        <textarea class="text-input" placeholder="Even something small counts..." oninput="state.goodThing=this.value">${state.goodThing}</textarea></div>`;
+    }
+
+    // Submit button
+    html+=`<div class="submit-bar">
+      <button class="submit-btn" onclick="handleSubmit()"${state.sending?" disabled":""}>
+        ${state.sending?"Saving...":"Submit Check-In ✓"}
+      </button>
+    </div>`;
+  }
+
+  app.innerHTML=html;
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
