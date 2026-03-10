@@ -114,11 +114,33 @@ async function handleSubmit(){
   if(state.form==="afternoon"){data.homeworkClasses=state.hwClasses;data.chores=state.chores;if(state.otherChore)data.otherChore=state.otherChore;}
   if(state.form==="evening"){data.goodThing=state.goodThing;}
 
-  if(SHEETS_ENDPOINT && SHEETS_ENDPOINT!=="PASTE_YOUR_URL_HERE"){
+  if(SHEETS_ENDPOINT){
     setState({sending:true});
     showToast("Saving...","sending");
     try{
-      await fetch(SHEETS_ENDPOINT,{method:"POST",body:JSON.stringify(data),mode:"no-cors"});
+      // Use a hidden iframe + form to POST to Google Apps Script (avoids CORS issues)
+      var iframe = document.getElementById("hidden-iframe");
+      if(!iframe){
+        iframe = document.createElement("iframe");
+        iframe.id = "hidden-iframe";
+        iframe.name = "hidden-iframe";
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+      }
+      var form = document.createElement("form");
+      form.method = "POST";
+      form.action = SHEETS_ENDPOINT;
+      form.target = "hidden-iframe";
+      var input = document.createElement("input");
+      input.type = "hidden";
+      input.name = "payload";
+      input.value = JSON.stringify(data);
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+      // Give it a moment to send
+      await new Promise(r => setTimeout(r, 1500));
       showToast("Saved!","success");
     }catch(err){
       console.error(err);
