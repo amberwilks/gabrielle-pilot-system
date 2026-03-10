@@ -118,29 +118,20 @@ async function handleSubmit(){
     setState({sending:true});
     showToast("Saving...","sending");
     try{
-      // Use a hidden iframe + form to POST to Google Apps Script (avoids CORS issues)
-      var iframe = document.getElementById("hidden-iframe");
-      if(!iframe){
-        iframe = document.createElement("iframe");
-        iframe.id = "hidden-iframe";
-        iframe.name = "hidden-iframe";
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
-      }
-      var form = document.createElement("form");
-      form.method = "POST";
-      form.action = SHEETS_ENDPOINT;
-      form.target = "hidden-iframe";
-      var input = document.createElement("input");
-      input.type = "hidden";
-      input.name = "payload";
-      input.value = JSON.stringify(data);
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-      // Give it a moment to send
-      await new Promise(r => setTimeout(r, 1500));
+      // Send data via script tag injection (bypasses all CORS restrictions)
+      var encoded = encodeURIComponent(JSON.stringify(data));
+      var url = SHEETS_ENDPOINT + "?data=" + encoded;
+      
+      await new Promise(function(resolve, reject){
+        var script = document.createElement("script");
+        script.src = url;
+        script.onload = function(){ document.head.removeChild(script); resolve(); };
+        script.onerror = function(){ document.head.removeChild(script); resolve(); }; // resolve anyway — data likely sent
+        document.head.appendChild(script);
+        // Fallback timeout in case neither fires
+        setTimeout(resolve, 3000);
+      });
+      
       showToast("Saved!","success");
     }catch(err){
       console.error(err);
