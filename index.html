@@ -9,6 +9,7 @@
   <title>Gabrielle's Check-In</title>
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=DM+Sans:opsz,wght@9..40,300..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
   <style>
     *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
     body{font-family:'DM Sans',sans-serif;background:linear-gradient(180deg,#F5F3FF 0%,#FAFAFE 40%,#FFF 100%);min-height:100vh;min-height:100dvh;color:#333}
@@ -67,19 +68,21 @@ const SHEETS_ENDPOINT = "https://script.google.com/macros/s/AKfycbzpeZxJyOAsMCIJ
 // DATA
 // ============================================================
 const ENERGY = [
-  {v:1,label:"Running on empty",emoji:"🔋",color:"#EF4444",bg:"#FEE2E2",desc:"Bare minimum today"},
-  {v:2,label:"Low energy",emoji:"🌧️",color:"#F59E0B",bg:"#FEF3C7",desc:"Basics only"},
-  {v:3,label:"Doing okay",emoji:"☁️",color:"#6366F1",bg:"#EDE9FE",desc:"Normal routine"},
-  {v:4,label:"Good day",emoji:"🌤️",color:"#10B981",bg:"#D1FAE5",desc:"Full routine"},
-  {v:5,label:"Great!",emoji:"☀️",color:"#059669",bg:"#A7F3D0",desc:"Ready for extras"}
+  {v:1,label:"Running on empty",icon:"sentiment_sad",color:"#EF4444",bg:"#FEE2E2",desc:"Bare minimum today"},
+  {v:2,label:"Low energy",icon:"sentiment_stressed",color:"#F59E0B",bg:"#FEF3C7",desc:"Basics only"},
+  {v:3,label:"Doing okay",icon:"sentiment_content",color:"#6366F1",bg:"#EDE9FE",desc:"Normal routine"},
+  {v:4,label:"Good day",icon:"sentiment_calm",color:"#10B981",bg:"#D1FAE5",desc:"Full routine"},
+  {v:5,label:"Great!",icon:"sentiment_excited",color:"#059669",bg:"#A7F3D0",desc:"Ready for extras"}
 ];
 const MORNING=[
   {id:"brush_teeth",label:"Brush teeth",ess:true},
   {id:"wash_face",label:"Wash face",ess:true},
   {id:"clean_glasses",label:"Clean glasses",ess:true},
-  {id:"brush_hair",label:"Brush hair",ess:false},
+  {id:"brush_hair",label:"Brush hair",ess:true},
   {id:"get_dressed",label:"Get dressed",ess:true},
-  {id:"backpack_binder",label:"Backpack + binder",ess:true}
+  {id:"backpack_binder",label:"Backpack + binder",ess:true},
+  {id:"drink_coffee",label:"Drink coffee",ess:false},
+  {id:"cuddle_chance",label:"Cuddle Chance",ess:false}
 ];
 const CLASSES=["Technical Theatre","Health & Family Ed","American History","Spanish 1","Biology","English 1","Advanced Geometry"];
 const CHORES=[
@@ -91,7 +94,7 @@ const CHORES=[
 ];
 const EVENING=[
   {id:"medication",label:"Medication",ess:true},
-  {id:"shower",label:"Shower",ess:false},
+  {id:"shower",label:"Shower",ess:true},
   {id:"retainer",label:"Retainer in",ess:true},
   {id:"brush_teeth_pm",label:"Brush teeth",ess:true},
   {id:"pick_clothes",label:"Pick out tomorrow's clothes",ess:false}
@@ -100,9 +103,9 @@ const EVENING=[
 // ============================================================
 // STATE
 // ============================================================
-let state = {form:null,energy:0,tasks:[],hwClasses:[],chores:[],otherChore:"",showOther:false,goodThing:"",submitted:false,sending:false};
+let state = {form:null,energy:0,tasks:[],hwClasses:[],chores:[],otherChore:"",showOther:false,goodThing:"",honesty:false,submitted:false,sending:false};
 
-function reset(){state={form:null,energy:0,tasks:[],hwClasses:[],chores:[],otherChore:"",showOther:false,goodThing:"",submitted:false,sending:false};render();}
+function reset(){state={form:null,energy:0,tasks:[],hwClasses:[],chores:[],otherChore:"",showOther:false,goodThing:"",honesty:false,submitted:false,sending:false};render();}
 function setState(patch){Object.assign(state,patch);render();}
 function toggleArr(arr,val){return arr.includes(val)?arr.filter(x=>x!==val):[...arr,val];}
 
@@ -110,7 +113,7 @@ function toggleArr(arr,val){return arr.includes(val)?arr.filter(x=>x!==val):[...
 // SUBMIT
 // ============================================================
 async function handleSubmit(){
-  const data={timestamp:new Date().toISOString(),formType:state.form,energy:state.energy,tasks:state.tasks};
+  const data={timestamp:new Date().toISOString(),formType:state.form,energy:state.energy,tasks:state.tasks,honesty:state.honesty};
   if(state.form==="afternoon"){data.homeworkClasses=state.hwClasses;data.chores=state.chores;if(state.otherChore)data.otherChore=state.otherChore;}
   if(state.form==="evening"){data.goodThing=state.goodThing;}
 
@@ -195,7 +198,7 @@ function render(){
         <div class="success-icon">✓</div>
         <h2 style="font-size:22px;font-weight:800;color:#111827;margin:0">Check-in complete!</h2>
         <p style="font-size:15px;color:#6B7280;margin:0">${msg}</p>
-        <div style="padding:8px 16px;background:${ed.bg};border-radius:99px;font-size:13px;font-weight:600;color:${ed.color}">Energy today: ${ed.emoji} ${ed.label}</div>
+        <div style="padding:8px 16px;background:${ed.bg};border-radius:99px;font-size:13px;font-weight:600;color:${ed.color};display:inline-flex;align-items:center;gap:6px">Energy today: <span class="material-symbols-outlined" style="font-size:18px">${ed.icon}</span> ${ed.label}</div>
         <button class="done-btn" onclick="reset()">Done</button>
       </div>`;
     return;
@@ -211,7 +214,7 @@ function render(){
   ENERGY.forEach(e=>{
     const sel=state.energy===e.v;
     html+=`<button class="energy-btn${sel?" sel":""}" style="${sel?`border:3px solid ${e.color};background:${e.bg};box-shadow:0 4px 12px ${e.color}33`:""};" onclick="setState({energy:${e.v}})">
-      <span style="font-size:28px">${e.emoji}</span>
+      <span class="material-symbols-outlined" style="font-size:28px;color:${sel?e.color:'#8B5CF6'}">${e.icon}</span>
       <span style="font-size:10px;font-weight:700;color:${sel?e.color:"#9CA3AF"}">${e.v}</span>
     </button>`;
   });
@@ -279,6 +282,14 @@ function render(){
       html+=`<div style="margin-bottom:24px"><div class="section-label">One good thing that happened today</div>
         <textarea class="text-input" placeholder="Even something small counts..." oninput="state.goodThing=this.value">${state.goodThing}</textarea></div>`;
     }
+
+    // Honesty checkbox
+    html+=`<div style="margin-bottom:24px">
+      <label class="task-row${state.honesty?" chk":""}" onclick="event.preventDefault();setState({honesty:!state.honesty})">
+        <input type="checkbox" ${state.honesty?"checked":""} tabindex="-1">
+        <span class="task-label" style="font-size:13px;text-decoration:none !important">By checking this box, I acknowledge that lying to a data system built entirely out of love for me is, frankly, a bold choice.</span>
+      </label>
+    </div>`;
 
     // Submit button
     html+=`<div class="submit-bar">
