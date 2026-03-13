@@ -18,7 +18,8 @@
     .tagline{text-align:center;font-size:11px;color:#C4B5FD;font-weight:600;letter-spacing:.5px;margin-top:32px}
     .form-card{padding:20px;border:none;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:16px;text-align:left;width:100%;transition:transform .15s,box-shadow .15s;box-shadow:0 2px 8px rgba(0,0,0,.06)}
     .form-card:active{transform:scale(.97)}
-    .form-card-icon{font-size:36px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:rgba(255,255,255,.7);flex-shrink:0}
+    .form-card-icon{width:56px;height:56px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:rgba(255,255,255,.7);flex-shrink:0;overflow:hidden}
+    .form-card-icon img{width:100%;height:100%;object-fit:cover;border-radius:16px}
     .energy-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
     .energy-btn{flex:1 1 0;min-width:56px;max-width:80px;padding:12px 4px 8px;border:2px solid #E5E7EB;border-radius:16px;background:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.08)}
     .energy-btn.sel{transform:scale(1.08)}
@@ -170,15 +171,15 @@ function render(){
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
         <button class="form-card" style="background:linear-gradient(135deg,#FEF3C7,#FDE68A)" onclick="setState({form:'morning'})">
-          <span class="form-card-icon">🌅</span>
+          <span class="form-card-icon"><img src="img/Morning.png" alt="Morning"></span>
           <div><div style="font-size:18px;font-weight:700;color:#1F1235;font-family:'Fraunces',serif">Morning</div><div style="font-size:13px;color:#6B7280;margin-top:2px">Hygiene & getting ready</div></div>
         </button>
         <button class="form-card" style="background:linear-gradient(135deg,#EDE9FE,#C4B5FD)" onclick="setState({form:'afternoon'})">
-          <span class="form-card-icon">📚</span>
+          <span class="form-card-icon"><img src="img/Afternoon.png" alt="Afternoon"></span>
           <div><div style="font-size:18px;font-weight:700;color:#1F1235;font-family:'Fraunces',serif">Afternoon</div><div style="font-size:13px;color:#6B7280;margin-top:2px">Homework & chores</div></div>
         </button>
         <button class="form-card" style="background:linear-gradient(135deg,#F3E8FF,#DDD6FE)" onclick="setState({form:'evening'})">
-          <span class="form-card-icon">🌙</span>
+          <span class="form-card-icon"><img src="img/Evening.png" alt="Evening"></span>
           <div><div style="font-size:18px;font-weight:700;color:#1F1235;font-family:'Fraunces',serif">Evening</div><div style="font-size:13px;color:#6B7280;margin-top:2px">Wind down & prep</div></div>
         </button>
       </div>
